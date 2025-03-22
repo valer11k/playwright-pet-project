@@ -1,0 +1,17 @@
+{
+  "name": "playwright-pet-project",
+  "version": "1.0.0",
+  "description": "End-to-end UI test automation using Playwright, featuring test coverage for SauceDemo.com as a QA practice project.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.11"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  }
+}
