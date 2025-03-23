@@ -1,7 +1,6 @@
 export class LoginPage {
   constructor(page) {
     this.page = page;
-    this.errorMessage = page.locator('[data-test="error"]');
   }
 
   async goto() {
@@ -14,7 +13,7 @@ export class LoginPage {
     await this.page.click('[data-test="login-button"]');
   }
 
-  getErrorLocator() {
-    return this.errorMessage;
+  async getErrorMessage() {
+    return this.page.locator('[data-test="error"]');
   }
 }
