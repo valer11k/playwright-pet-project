@@ -18,12 +18,19 @@ blocks:
             - npx playwright install --with-deps
             - npx playwright test
             - 'echo "PWD=$(pwd)" && ls -lah'
-            - 'test -f report.xml && echo "✅ report.xml found" || echo "⚠️ report.xml not in root"'
+            - 'test -f report.xml && echo "✅ report.xml found" || echo "⚠️ report.xml missing"'
       epilogue:
         always:
           commands:
-            # publish JUnit to Tests tab (try root first, then search)
-            - '[[ -f report.xml ]] && test-results publish report.xml || REPORT=$(git ls-files -co --exclude-standard | grep -E "(^|/)report\.xml$" || true) && [[ -n "$REPORT" ]] && test-results publish "$REPORT"'
-            # upload HTML report folder
+            - test-results publish report.xml
             - artifacts push workflow playwright-report
+
+after_pipeline:
+  - name: Merge test results
+    task:
+      jobs:
+        - name: merge
+          commands:
+            - test-results gen-pipeline-report
+
 
