@@ -16,8 +16,9 @@ blocks:
             - sem-version node 20.15.1
             - npm ci
             - npx playwright install --with-deps
-            - npx playwright test --reporter=list,html
+            - npx playwright test
       epilogue:
         always:
           commands:
+            - '[[ -f report.xml ]] && test-results publish report.xml'
             - artifacts push workflow playwright-report
