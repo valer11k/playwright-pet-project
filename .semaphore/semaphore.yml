@@ -1,0 +1,44 @@
+version: v1.0
+name: Playwright CI
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+
+global_job_config:
+  prologue:
+    commands:
+      - checkout
+      # pick Node version (or rely on your .nvmrc)
+      - sem-version node 20.15.1
+      - npm ci
+      # install browsers + OS deps for CI
+      - npx playwright install --with-deps
+
+blocks:
+  - name: Tests
+    task:
+      jobs:
+        - name: run playwright
+          commands:
+            # optional: junit + html reporters
+            - echo ":: configuring reporters"
+            - |
+              node -e "const fs=require('fs'); const p='./playwright.config.js';
+              if(fs.existsSync(p)){
+                let t=fs.readFileSync(p,'utf8');
+                if(!t.includes('junit')){
+                  t=t.replace(/reporter:\\s*\\[[\\s\\S]*?\\]/,'reporter: [[\"list\"],[\"junit\",{outputFile:\"junit.xml\"}],[\"html\",{open:\"never\"}]]');
+                }
+                fs.writeFileSync(p,t);
+              }"
+            - npx playwright test --reporter=list,junit,html
+      epilogue:
+        on_pass:
+          commands:
+            # publish test results & keep the HTML report
+            - test-results publish junit.xml
+            - artifacts push workflow playwright-report
+        always:
+          commands:
+            - artifacts push workflow playwright-report
